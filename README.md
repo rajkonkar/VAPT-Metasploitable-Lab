@@ -1,139 +1,139 @@
 # 🔐 Metasploitable 2 – Vulnerability Assessment & Penetration Testing (VAPT)
 ### **By Raj M. Konkar | Security Intern – Codectechnologies**
 
-This repository contains a complete **Vulnerability Assessment and Penetration Test (VAPT)** performed against the **Metasploitable 2** virtual machine in a controlled security lab.
+This repository contains a complete **Vulnerability Assessment and Penetration Test (VAPT)** performed against the intentionally vulnerable **Metasploitable 2** virtual machine in a controlled cybersecurity lab.
 
-The project demonstrates real-world penetration testing methodologies, enumeration techniques, vulnerability discovery, exploitation, and professional reporting — all aligned with industry standards such as **PTES** and **OWASP**.
+This project demonstrates a full penetration testing workflow, including manual enumeration, automated scanning, exploitation, and professional reporting aligned with **PTES**, **OWASP**, and industry consulting standards.
 
 ---
 
-## 📌 **Project Objectives**
+## 📌 Project Objectives
 
-- Identify exposed attack surface on the Metasploitable 2 host.
-- Enumerate services manually using standard penetration testing tools.
+- Identify the exposed attack surface of the Metasploitable 2 host.
+- Enumerate all accessible services using manual tools.
 - Validate vulnerabilities using automated scanners.
-- Safely exploit critical vulnerabilities to prove real risk.
-- Produce a **corporate-style VAPT report** documenting methodology, findings, and recommendations.
+- Exploit critical weaknesses to demonstrate realistic risk.
+- Produce a **consulting-style VAPT report** with evidence and remediation steps.
 
 ---
 
-## 🛠️ **Tools & Technologies Used**
+## 🛠️ Tools & Technologies Used
 
 | Category | Tools |
 |---------|-------|
-| **Scanning & Enumeration** | Nmap, NSE, Enum4linux, Nikto |
+| **Scanning & Enumeration** | Nmap (Full Scan, NSE Scripts), Enum4linux, Nikto |
 | **Exploitation** | Metasploit Framework |
 | **Vulnerability Scanning** | Nessus Essentials |
-| **Analysis & Reporting** | LaTeX (Crunch-style professional template) |
-| **Platform** | Kali Linux attacker machine |
+| **Reporting** | LaTeX (professional Crunch-style format) |
+| **Environment** | Kali Linux (Attacker), Metasploitable 2 (Target) |
 
 ---
 
-## 🚀 **Key Findings (High-Level Summary)**
+## 🚀 High-Level Summary of Findings
 
-### 🔴 **Critical Vulnerabilities**
+### 🔴 Critical Vulnerabilities
 - **vsftpd 2.3.4 Backdoor (CVE-2011-2523)**  
-  → Successfully exploited via Metasploit → **Remote Root Shell**  
-- **UnrealIRCd Backdoor**  
-  → Remote Code Execution via maliciously modified server binary
+  ✔ Successfully exploited using Metasploit  
+  ✔ Result: **Unauthenticated Remote Root Shell**
 
-### 🟠 **High Severity**
-- Weak SSL/TLS on SMTP (SSLv2/SSLv3, POODLE, weak DH)
+- **UnrealIRCd Backdoor**  
+  ✔ Remote Code Execution due to malicious upstream binary
+
+### 🟠 High Severities
+- Weak SSL/TLS on SMTP (SSLv2, SSLv3, POODLE, weak DH parameters)
 - Samba 3.0.20 with SMB signing disabled
-- distccd Remote Command Execution exposure
+- distccd remote command execution exposure
 - Legacy VNC 3.3 service exposed
 
-### 🟡 **Medium Severity**
-- Outdated Apache and Tomcat versions
-- Misconfigurations on various services
+### 🟡 Medium Severities
+- Outdated Apache & Tomcat versions
+- Multiple directory indexing / info disclosure issues
+- Weak HTTP headers and outdated software stacks
 
-➡️ In a real network, these issues would allow **rapid full-system compromise** with multiple redundant attack paths.
+➡️ These issues create **multiple easy attack paths**, allowing rapid system compromise.
 
 ---
 
-## 📂 **Repository Structure**
+## 📂 Repository Structure
 
 ```plaintext
 VAPT-Metasploitable-Lab/
 │
-├── scans/                # Raw Nmap/Nikto/Enum4linux outputs
-├── msflogs/              # Metasploit logs and session output
+├── scans/                 # Raw Nmap, Nikto, Enum4linux outputs
+├── msflogs/               # Metasploit logs & session outputs
 │
-└── report/               # Final deliverables
-     ├── latex/           # LaTeX source code for the VAPT report
-     ├── screenshots/     # Evidence screenshots (Nmap, Nikto, Nessus, MSF, etc.)
-     └── Metasploitable_VAPT_Report.pdf   # Final consulting-style PDF
+└── report/
+     ├── latex/            # LaTeX source for final VAPT report
+     ├── screenshots/      # Evidence screenshots
+     └── Metasploitable_VAPT_Report.pdf   # Final professional report
+```
 
+---
 
-##📘 **Professional Final Report**
+## 📘 Professional Final Report
 
-A full consulting-grade VAPT report is included:
+A fully polished, **consulting-grade** penetration testing report is available:
 
-📄 report/Metasploitable_VAPT_Report.pdf
+📄 `report/Metasploitable_VAPT_Report.pdf`
 
-The report contains:
+It includes:
 
-Executive Summary
+- Executive Summary  
+- Scope & Rules of Engagement  
+- Full PTES Methodology  
+- Manual vs Automated Vulnerability Correlation  
+- Detailed Technical Findings  
+- Exploitation Walkthrough (Root Shell Proof)  
+- Remediation & Hardening Roadmap  
+- Appendices (Evidence + Logs)
 
-Scope & Rules of Engagement
+Written in LaTeX using a clean, corporate-style template.
 
-PTES-aligned methodology
+---
 
-Manual + automated correlation
+## ⚡ Exploitation Proof – Root Shell
 
-Detailed vulnerability analysis
+One of the major vulnerabilities exploited (vsftpd 2.3.4 backdoor) resulted in full compromise:
 
-Exploitation walkthrough with proof (root shell)
-
-Recommendations & remediation roadmap
-
-Appendix with screenshots and logs
-
-This report is written professionally using LaTeX in the exact style used by consulting firms.
-
-⚡ **Exploitation Proof – Root Shell**
-
-One of the validated exploits (vsftpd backdoor):
-
+```
 whoami
 root
+```
 
-→ **Full system compromise achieved successfully.**
+✔ **Remote Root Access Obtained**  
+✔ Demonstrates complete system takeover
 
-Screenshot in:
-report/screenshots/metasploit_root.png
+📷 Evidence stored in:  
+`report/screenshots/metasploit_root.png`
 
-🎯 **Skills Demonstrated**
+---
 
-Offensive security methodology (Recon → Exploit → Post-Exploit)
+## 🎯 Skills Demonstrated
 
-Network scanning & service fingerprinting
+- Professional penetration testing workflow  
+- Network scanning & service fingerprinting  
+- Nmap NSE-based vulnerability assessment  
+- Web enumeration with Nikto  
+- SMB/NetBIOS enumeration via Enum4linux  
+- Exploitation using Metasploit (RCE → Root Shell)  
+- Nessus automated scanning & report correlation  
+- Cybersecurity documentation & LaTeX reporting  
+- Real-world VAPT procedures and methodology  
 
-Using Nmap NSE for vulnerability detection
+This project mirrors the process used by actual red-team consultants and penetration testers.
 
-Web/app enumeration using Nikto
+---
 
-SMB/NetBIOS enumeration
+## 🔗 Author
 
-Exploitation using Metasploit
-
-Vulnerability analysis & interpretation
-
-Automated vulnerability scanning with Nessus
-
-Full professional report writing in LaTeX
-
-Evidence-based security documentation
-
-This project reflects the workflow of a real penetration test.
-
-🔗 **Author**
-
-Raj M. Konkar
-Security Intern — Codectechnologies
+**Raj M. Konkar**  
+Security Intern — Codectechnologies  
 GitHub: https://github.com/rajkonkar
 
-📝 **Disclaimer**
+---
 
-This assessment was performed strictly in a controlled environment on a deliberately vulnerable machine.
-Do NOT run these techniques on systems you do not have explicit permission to test.
+## 📝 Disclaimer
+
+This assessment was conducted **only within a controlled environment** on a deliberately vulnerable machine (Metasploitable 2).  
+Do **NOT** attempt these techniques on any system without explicit legal permission.
+
