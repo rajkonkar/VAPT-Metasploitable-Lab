@@ -63,3 +63,72 @@ VAPT-Metasploitable-Lab/
      ├── latex/           # LaTeX source code for the VAPT report
      ├── screenshots/     # Evidence screenshots (Nmap, Nikto, Nessus, MSF, etc.)
      └── Metasploitable_VAPT_Report.pdf   # Final consulting-style PDF
+
+
+📘 Professional Final Report
+
+A full consulting-grade VAPT report is included:
+
+📄 report/Metasploitable_VAPT_Report.pdf
+
+The report contains:
+
+Executive Summary
+
+Scope & Rules of Engagement
+
+PTES-aligned methodology
+
+Manual + automated correlation
+
+Detailed vulnerability analysis
+
+Exploitation walkthrough with proof (root shell)
+
+Recommendations & remediation roadmap
+
+Appendix with screenshots and logs
+
+This report is written professionally using LaTeX in the exact style used by consulting firms.
+
+⚡ Exploitation Proof – Root Shell
+
+One of the validated exploits (vsftpd backdoor):
+
+whoami
+root
+
+→ Full system compromise achieved successfully.
+
+Screenshot in:
+report/screenshots/metasploit_root.png
+
+🎯 Skills Demonstrated
+
+Offensive security methodology (Recon → Exploit → Post-Exploit)
+
+Network scanning & service fingerprinting
+
+Using Nmap NSE for vulnerability detection
+
+Web/app enumeration using Nikto
+
+SMB/NetBIOS enumeration
+
+Exploitation using Metasploit
+
+Vulnerability analysis & interpretation
+
+Automated vulnerability scanning with Nessus
+
+Full professional report writing in LaTeX
+
+Evidence-based security documentation
+
+This project reflects the workflow of a real penetration test.
+
+🔗 Author
+
+Raj M. Konkar
+Security Intern — Codectechnologies
+GitHub: https://github.com/rajkonkar
