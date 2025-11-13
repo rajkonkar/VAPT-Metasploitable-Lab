@@ -1,5 +1,5 @@
 # 🔐 Metasploitable 2 – Vulnerability Assessment & Penetration Testing (VAPT)
-### **By Raj M. Konkar | Security Intern – Codectechnologie**
+### **By Raj M. Konkar | Security Intern – Codectechnologies**
 
 This repository contains a complete **Vulnerability Assessment and Penetration Test (VAPT)** performed against the **Metasploitable 2** virtual machine in a controlled security lab.
 
