@@ -1,0 +1,560 @@
+\documentclass[12pt,a4paper]{article}
+
+% ----------------------------------------------------------
+% Packages
+% ----------------------------------------------------------
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{setspace}
+
+\setstretch{1.15}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    pdfauthor={Raj M. Konkar},
+    pdftitle={Vulnerability Assessment and Penetration Testing (VAPT) Report},
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{VAPT Report}
+\lhead{Metasploitable 2}
+\cfoot{\thepage}
+
+% Section style – Crunch-like: bold header + thin rule
+\titleformat{\section}
+  {\large\bfseries}
+  {\thesection.}
+  {0.5em}
+  {}
+  [\vspace{0.25em}\titlerule]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries}
+  {\thesubsection}
+  {0.5em}
+  {}
+
+\setlist[itemize]{noitemsep, topsep=0.25em}
+\setlist[enumerate]{noitemsep, topsep=0.25em}
+
+% ----------------------------------------------------------
+% Report Metadata
+% ----------------------------------------------------------
+\newcommand{\ReportTitle}{Vulnerability Assessment and Penetration Testing (VAPT) Report}
+\newcommand{\TargetName}{Metasploitable 2 (192.168.217.130)}
+\newcommand{\TesterName}{Raj M. Konkar}
+\newcommand{\OrgName}{Codectechnologie}
+\newcommand{\ReportDate}{November 2025}
+
+\begin{document}
+
+% ----------------------------------------------------------
+% TITLE PAGE (clean, like a consulting report)
+% ----------------------------------------------------------
+\begin{titlepage}
+    \centering
+    \vspace*{3cm}
+    {\Large \OrgName \par}
+    \vspace{0.5cm}
+    {\huge\bfseries \ReportTitle \par}
+    \vspace{0.6cm}
+    {\Large Target: \TargetName \par}
+    \vspace{2.5cm}
+    {\large Prepared by:\par}
+    {\Large \TesterName \par}
+    \vspace{0.3cm}
+    {\large Security Intern \par}
+    \vspace{0.8cm}
+    {\large \ReportDate \par}
+    \vfill
+    {\small This report is produced for educational and internal lab use only. Testing was performed in a controlled environment against a deliberately vulnerable host.}
+\end{titlepage}
+
+% ----------------------------------------------------------
+% TABLE OF CONTENTS
+% ----------------------------------------------------------
+\tableofcontents
+\newpage
+
+% ----------------------------------------------------------
+% 1. EXECUTIVE SUMMARY
+% ----------------------------------------------------------
+\section{Executive Summary}
+
+This report documents a full Vulnerability Assessment and Penetration Test (VAPT) conducted against a Metasploitable 2 virtual machine deployed in an isolated lab network. The goal of the engagement was to emulate the activities of an external attacker with network access to the host, identify weaknesses, safely exploit selected vulnerabilities, and provide remediation guidance.
+
+The assessment combined:
+\begin{itemize}
+    \item \textbf{Manual testing}: Nmap service enumeration, Nikto web scanning, SMB enumeration, exploit verification using Metasploit.
+    \item \textbf{Automated testing}: Nessus Essentials vulnerability scanning to validate and enrich manual findings.
+\end{itemize}
+
+Key outcomes:
+\begin{itemize}
+    \item Multiple \textbf{Critical} issues were identified, including a \textbf{vsftpd 2.3.4 backdoor (CVE-2011-2523)} and a backdoored \textbf{UnrealIRCd} instance.
+    \item Exploitation of the vsftpd backdoor using Metasploit successfully yielded a \textbf{remote root shell}, proving full system compromise.
+    \item Numerous \textbf{High} and \textbf{Medium} vulnerabilities were identified across SMTP, SMB, NFS, HTTP, and VNC services, largely due to outdated software and insecure configurations.
+\end{itemize}
+
+Overall risk posture of the target host is assessed as \textbf{Critical}: compromise requires minimal effort, publicly available exploits exist, and successful exploitation leads to complete control of the system.
+
+\newpage
+
+% ----------------------------------------------------------
+% 2. SCOPE AND RULES OF ENGAGEMENT
+% ----------------------------------------------------------
+\section{Scope and Rules of Engagement}
+
+\subsection{Scope}
+
+\begin{itemize}
+    \item \textbf{Target Host:} Metasploitable 2 virtual machine.
+    \item \textbf{IP Address:} 192.168.217.130 (internal lab network).
+    \item \textbf{In Scope Activities:}
+    \begin{itemize}
+        \item Network and port scanning.
+        \item Service fingerprinting and enumeration.
+        \item Vulnerability discovery using manual and automated tools.
+        \item Exploitation of vulnerabilities in a controlled manner.
+        \item Documentation and reporting.
+    \end{itemize}
+    \item \textbf{Out of Scope:} Denial of Service (DoS), password spraying against external services, attacks against systems other than the Metasploitable VM.
+\end{itemize}
+
+\subsection{Rules of Engagement}
+
+\begin{itemize}
+    \item All testing was performed from a Kali Linux attacker machine within the same isolated network segment as the target.
+    \item Exploitation was limited to obtaining proof-of-concept access (e.g., shell) and basic validation actions (e.g., running \texttt{whoami}) without destructive changes.
+    \item No data exfiltration beyond what is needed to prove impact was attempted.
+\end{itemize}
+
+% ----------------------------------------------------------
+% 3. METHODOLOGY
+% ----------------------------------------------------------
+\section{Methodology}
+
+The testing approach followed a simplified version of industry standards such as the Penetration Testing Execution Standard (PTES) and elements of the OWASP Testing Guide where relevant.
+
+\subsection{Phases}
+
+\begin{enumerate}
+    \item \textbf{Reconnaissance} – Host identification and basic OS fingerprinting.
+    \item \textbf{Port Scanning} – Discovery of open TCP ports and exposed services.
+    \item \textbf{Service Enumeration} – Banner grabbing, protocol-level checks and version detection.
+    \item \textbf{Vulnerability Assessment} – Nmap NSE scripts, Nikto, and Nessus scanning.
+    \item \textbf{Exploitation} – Safe exploitation of high-risk, well-known vulnerabilities.
+    \item \textbf{Analysis and Reporting} – Correlating manual and automated findings, writing formal documentation.
+\end{enumerate}
+
+\subsection{Tools Used}
+
+\begin{itemize}
+    \item \textbf{Kali Linux} – Primary attack platform.
+    \item \textbf{Nmap} – Port scanning, service and OS detection, NSE vulnerability scripts.
+    \item \textbf{Nikto} – Web server and HTTP misconfiguration scanning.
+    \item \textbf{Enum4linux} – SMB and NetBIOS enumeration.
+    \item \textbf{Metasploit Framework} – Exploitation and shell access (vsftpd backdoor).
+    \item \textbf{Nessus Essentials} – Automated vulnerability scanner to validate and expand manual results.
+\end{itemize}
+
+% ----------------------------------------------------------
+% 4. HIGH-LEVEL RESULTS OVERVIEW
+% ----------------------------------------------------------
+\section{High-Level Results Overview}
+
+\subsection{Severity Summary (Key Issues)}
+
+The table below summarises the key vulnerabilities identified during the engagement. This does not represent every low-level finding, but highlights those most relevant from an attacker’s perspective.
+
+\begin{center}
+\begin{tabular}{|p{4cm}|p{3cm}|p{6cm}|}
+\hline
+\textbf{Vulnerability} & \textbf{Severity} & \textbf{Comment} \\
+\hline
+vsftpd 2.3.4 backdoor (CVE-2011-2523) & Critical & Remote root shell via FTP backdoor \\
+UnrealIRCd backdoor & Critical & Backdoored IRC daemon, RCE \\
+Weak/legacy encryption in SMTP (POODLE, weak DH) & High & Supports SSLv2/SSLv3 and weak ciphers \\
+Samba 3.0.20, signing disabled & High & Susceptible to SMB relay and credential attacks \\
+distccd remote execution exposure & High & Historical RCE; exposed development service \\
+VNC 3.3 with weak configuration & High/Critical & Remote desktop access risk \\
+Outdated Apache/Tomcat stack & Medium/High & Multiple web vulnerabilities possible \\
+NFS and RPC exposure & Medium & Potential unauthorised file access \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Attacker View}
+
+From an attacker’s perspective, the host presents a wide attack surface with numerous services that are:
+\begin{itemize}
+    \item \textbf{Outdated}, with known public exploits.
+    \item \textbf{Misconfigured}, exposing unnecessary protocols (Telnet, NFS, VNC).
+    \item \textbf{Lacking hardening}, such as missing SMB signing on Samba, weak TLS on SMTP.
+\end{itemize}
+
+A single critical vulnerability (the vsftpd backdoor) is enough to fully compromise this system, with multiple other services available as backup paths for compromise.
+
+\newpage
+
+% ----------------------------------------------------------
+% 5. ENUMERATION EVIDENCE
+% ----------------------------------------------------------
+\section{Enumeration Evidence}
+
+\subsection{Nmap Full Port Scan}
+
+Nmap was used to perform a full TCP scan with service and version detection:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{nmap_full.png}
+    \caption{Nmap full port scan – Metasploitable 2}
+\end{figure}
+
+This revealed a broad set of open ports including FTP (21), SSH (22), Telnet (23), SMTP (25), HTTP (80, 8180), SMB (139, 445), databases (3306, 5432), VNC (5900), IRC (6667/6697), NFS/RPC, and others.
+
+\subsection{Nmap Vulnerability Scripts}
+
+Nmap’s NSE vulnerability scripts were run against selected high-value ports. The vsftpd service on port 21 was confirmed as backdoored:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{nmap_vuln.png}
+    \caption{Nmap NSE output – vsftpd 2.3.4 backdoor (CVE-2011-2523)}
+\end{figure}
+
+The script not only identified the vulnerable version but also demonstrated command execution with \texttt{uid=0(root)}.
+
+\subsection{Web Server Enumeration – Nikto}
+
+Nikto was used to assess the HTTP service on port 80, identifying outdated Apache versions, potentially dangerous HTTP methods, and directory listings:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{nikto_scan.png}
+    \caption{Nikto scan – Apache HTTP server on Metasploitable 2}
+\end{figure}
+
+These issues highlight the web stack as a viable target for further exploitation.
+
+\subsection{SMB Enumeration – Enum4linux}
+
+Enum4linux was used to enumerate SMB shares, users, and workgroup information:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{enum4linux.png}
+    \caption{Enum4linux output – SMB users, shares and configuration}
+\end{figure}
+
+The presence of old Samba versions and lack of SMB signing support increases the risk of credential-related attacks in a real environment.
+
+\newpage
+
+% ----------------------------------------------------------
+% 6. DETAILED TECHNICAL FINDINGS
+% ----------------------------------------------------------
+\section{Detailed Technical Findings}
+
+Below are the most relevant vulnerabilities, described in a concise consulting style with technical depth.
+
+\subsection{vsftpd 2.3.4 Backdoor (CVE-2011-2523)}
+\textbf{Port:} 21/tcp (FTP) \\
+\textbf{Severity:} Critical
+
+\textbf{Technical Description:}  
+vsftpd 2.3.4 is a historically backdoored version of the FTP daemon where the upstream distribution was compromised. When a specially crafted username is supplied, the service spawns a shell bound to a high port, providing unauthenticated root access.
+
+\textbf{Evidence:}
+\begin{itemize}
+    \item Nmap service detection reported: \texttt{vsftpd 2.3.4}.
+    \item Nmap NSE \texttt{ftp-vsftpd-backdoor} output indicated:
+    \begin{itemize}
+        \item \texttt{State: VULNERABLE (Exploitable)}
+        \item \texttt{Exploit results: uid=0(root) gid=0(root)}
+    \end{itemize}
+    \item Exploitation was later confirmed using Metasploit (see Section~\ref{sec:exploitation}).
+\end{itemize}
+
+\textbf{Impact:}  
+Successful exploitation gives a remote attacker full control of the system as \texttt{root}. In a real environment, this would permit:
+\begin{itemize}
+    \item Complete data access and modification.
+    \item Installation of persistent backdoors.
+    \item Lateral movement to other systems.
+\end{itemize}
+
+\textbf{Remediation:}
+\begin{itemize}
+    \item Remove vsftpd 2.3.4 immediately. Install a supported, non-backdoored FTP server.
+    \item Consider disabling FTP and using SFTP over SSH instead.
+    \item Restrict any remaining administrative services via firewall.
+\end{itemize}
+
+\vspace{0.6em}
+
+\subsection{UnrealIRCd Backdoor}
+\textbf{Ports:} 6667/tcp, 6697/tcp (IRC) \\
+\textbf{Severity:} Critical
+
+\textbf{Description:}  
+The host runs a version of UnrealIRCd that was widely distributed with an embedded backdoor. This backdoor allows remote attackers to execute arbitrary code by sending crafted commands to the IRC service.
+
+\textbf{Impact:}  
+An attacker can gain remote command execution with the permissions of the UnrealIRCd process, which can often be escalated further using local privilege escalation techniques.
+
+\textbf{Remediation:}
+\begin{itemize}
+    \item Completely remove UnrealIRCd from systems where it is not strictly required.
+    \item If IRC is needed, reinstall from a trusted source and keep it patched.
+\end{itemize}
+
+\vspace{0.6em}
+
+\subsection{SMTP SSL/TLS Misconfiguration (POODLE, Weak DH)}
+\textbf{Port:} 25/tcp (SMTP) \\
+\textbf{Severity:} High
+
+\textbf{Description:}  
+The SMTP server supports deprecated and insecure protocols (SSLv2/SSLv3) and weak Diffie–Hellman parameters. These weaknesses enable downgrade attacks (e.g., POODLE, Logjam) and may allow an active man-in-the-middle to decrypt or tamper with traffic.
+
+\textbf{Impact:}  
+In a real deployment, email confidentiality and integrity can be compromised, exposing sensitive communications and credentials.
+
+\textbf{Remediation:}
+\begin{itemize}
+    \item Disable SSLv2 and SSLv3 completely.
+    \item Enforce TLS 1.2+ and modern cipher suites (e.g., ECDHE with AES-GCM).
+    \item Regenerate strong DH parameters (2048 bits or more).
+\end{itemize}
+
+\vspace{0.6em}
+
+\subsection{Samba 3.0.20 with Message Signing Disabled}
+\textbf{Ports:} 139/tcp, 445/tcp (SMB) \\
+\textbf{Severity:} High
+
+\textbf{Description:}  
+The Samba 3.0.20 server advertises SMB signing as disabled. This makes it easier for attackers on the same network to relay or tamper with SMB authentication attempts.
+
+\textbf{Impact:}  
+In an enterprise environment, this could be combined with NTLM relay or man-in-the-middle techniques to gain unauthorised access to shared resources or escalate privileges.
+
+\textbf{Remediation:}
+\begin{itemize}
+    \item Upgrade Samba to a supported version.
+    \item Enable SMB signing and disable SMBv1.
+    \item Restrict SMB exposure to trusted administrative networks.
+\end{itemize}
+
+\vspace{0.6em}
+
+\subsection{distccd Remote Code Execution Exposure}
+\textbf{Port:} 3632/tcp (distccd) \\
+\textbf{Severity:} High
+
+\textbf{Description:}  
+The distccd service was historically vulnerable to remote command execution (e.g., CVE-2004-2687) when exposed to untrusted networks. On Metasploitable, this service is left open and reachable.
+
+\textbf{Impact:}  
+An attacker can execute arbitrary commands on the host, potentially gaining a foothold even if other services were secured.
+
+\textbf{Remediation:}
+\begin{itemize}
+    \item Disable distccd entirely if not required.
+    \item If needed for development, bind it only to localhost or a dedicated management network.
+\end{itemize}
+
+\vspace{0.6em}
+
+\subsection{VNC 3.3 with Weak/Legacy Configuration}
+\textbf{Port:} 5900/tcp (VNC) \\
+\textbf{Severity:} High–Critical (depending on password strength)
+
+\textbf{Description:}  
+A VNC server using protocol version 3.3 is exposed. VNC by default does not encrypt traffic and often relies on weak passwords if not properly configured.
+
+\textbf{Impact:}  
+Attackers may be able to brute-force or sniff credentials and obtain full desktop control, allowing them to interact with the system exactly as a local user would.
+
+\textbf{Remediation:}
+\begin{itemize}
+    \item Disable VNC unless strictly required.
+    \item If needed, restrict VNC access using VPN/SSH tunnels and enforce strong random passwords.
+\end{itemize}
+
+\newpage
+
+% ----------------------------------------------------------
+% 7. MANUAL VS NESSUS CORRELATION
+% ----------------------------------------------------------
+\section{Manual vs Nessus Correlation}
+
+To demonstrate maturity and consistency in the testing process, the manual results were correlated against the Nessus Essentials automated scan.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{nessus_full.png}
+    \caption{Nessus Essentials – Summary of critical and high vulnerabilities}
+\end{figure}
+
+\subsection*{Correlation Table}
+
+\begin{longtable}{|p{1.5cm}|p{2.1cm}|p{4.2cm}|p{4.2cm}|p{1.6cm}|}
+\hline
+\textbf{Port} & \textbf{Service} & \textbf{Manual Result} & \textbf{Nessus Result} & \textbf{Severity} \\
+\hline
+21 & FTP & vsftpd 2.3.4 backdoor, RCE & Backdoor detected, remote shell possible & Critical \\
+\hline
+25 & SMTP & Weak SSL/TLS (POODLE, weak DH) & SSLv2/SSLv3, weak ciphers reported & High \\
+\hline
+139/445 & SMB & Samba 3.0.20, signing disabled & Multiple SMB vulnerabilities & High \\
+\hline
+3632 & distccd & Remote execution exposure & distcc service detected as vulnerable & High \\
+\hline
+5900 & VNC & Legacy VNC 3.3, weak config & VNC service flagged as weakly protected & High \\
+\hline
+6667/6697 & IRC & UnrealIRCd backdoor present & UnrealIRCd backdoor plugin triggered & Critical \\
+\hline
+80/8180 & HTTP & Outdated Apache/Tomcat stack & Several web server issues detected & Medium/High \\
+\hline
+\end{longtable}
+
+This correlation shows that the manual and automated approaches reinforce each other, increasing confidence in the findings and ensuring that no critical area is purely reliant on a single tool.
+
+\newpage
+
+% ----------------------------------------------------------
+% 8. EXPLOITATION DETAILS
+% ----------------------------------------------------------
+\section{Exploitation Details}
+\label{sec:exploitation}
+
+\subsection{vsftpd 2.3.4 Backdoor Exploit}
+
+After confirming the presence of the vsftpd 2.3.4 backdoor using Nmap NSE, Metasploit was used to exploit the service:
+
+\begin{itemize}
+    \item \textbf{Module:} \texttt{exploit/unix/ftp/vsftpd\_234\_backdoor}
+    \item \textbf{RHOST:} 192.168.217.130
+    \item \textbf{RPORT:} 21
+\end{itemize}
+
+The exploit successfully returned a remote shell. Running standard commands confirmed that the shell had \textbf{root} privileges:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{metasploit_root.png}
+    \caption{Metasploit exploitation of vsftpd backdoor – root shell obtained}
+\end{figure}
+
+In a real-world environment, this level of access would be considered a complete compromise of the host.
+
+\newpage
+
+% ----------------------------------------------------------
+% 9. RECOMMENDATIONS AND HARDENING
+% ----------------------------------------------------------
+\section{Recommendations and Hardening Roadmap}
+
+\subsection{Immediate Actions (0–3 days)}
+
+\begin{itemize}
+    \item Remove or patch all backdoored services (vsftpd 2.3.4, UnrealIRCd).
+    \item Disable unnecessary legacy services such as Telnet, distccd, and VNC.
+    \item Restrict access to administrative services (FTP, SMB, databases) to trusted management networks only.
+\end{itemize}
+
+\subsection{Short-Term Actions (Within 2–4 weeks)}
+
+\begin{itemize}
+    \item Upgrade Apache, Tomcat, Samba, and database servers (MySQL, PostgreSQL) to supported versions.
+    \item Harden TLS configurations for SMTP and any web services:
+    \begin{itemize}
+        \item Enforce TLS 1.2 or higher.
+        \item Disable weak ciphers and legacy protocols.
+    \end{itemize}
+    \item Configure SMB signing and remove SMBv1 where feasible.
+\end{itemize}
+
+\subsection{Long-Term Improvements}
+
+\begin{itemize}
+    \item Establish a regular vulnerability scanning and patch management process.
+    \item Segment networks so that high-value systems are not directly reachable from untrusted segments.
+    \item Implement centralised logging and alerting to identify unusual authentication and network events.
+\end{itemize}
+
+% ----------------------------------------------------------
+% 10. CONCLUSION
+% ----------------------------------------------------------
+\section{Conclusion}
+
+This VAPT engagement against the Metasploitable 2 host demonstrated how a combination of:
+\begin{itemize}
+    \item Outdated software,
+    \item Legacy protocols, and
+    \item Insecure default configurations
+\end{itemize}
+can expose an organisation to rapid and complete compromise.
+
+The vsftpd 2.3.4 backdoor alone was sufficient to obtain a root shell, while numerous additional vulnerabilities provide alternative attack paths. Although this target is intentionally vulnerable, the techniques used mirror those that would be applied against real-world systems.
+
+Implementing the remediation steps outlined in this report would significantly strengthen the security posture of any similar environment.
+
+\newpage
+
+% ----------------------------------------------------------
+% APPENDIX – SELECTED EVIDENCE
+% ----------------------------------------------------------
+\section*{Appendix – Selected Evidence Screenshots}
+\addcontentsline{toc}{section}{Appendix – Selected Evidence Screenshots}
+
+\subsection*{A.1 Nmap Full Scan}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{nmap_full.png}
+    \caption{Nmap full scan – open ports and services}
+\end{figure}
+
+\subsection*{A.2 Nmap Vulnerability Script}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{nmap_vuln.png}
+    \caption{Nmap NSE – vsftpd backdoor vulnerability details}
+\end{figure}
+
+\subsection*{A.3 Nikto Web Scan}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{nikto_scan.png}
+    \caption{Nikto – HTTP server issues and misconfigurations}
+\end{figure}
+
+\subsection*{A.4 SMB Enumeration}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{enum4linux.png}
+    \caption{Enum4linux – SMB and NetBIOS enumeration}
+\end{figure}
+
+\subsection*{A.5 Nessus Summary}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\textwidth]{nessus_full.png}
+    \caption{Nessus Essentials – vulnerability summary view}
+\end{figure}
+
+\end{document}
