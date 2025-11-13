@@ -1,0 +1,10 @@
+[1m[34m[*][0m Spooling to file Project2-VAPT/msflogs/msf_20251112_144713.txt...
+[0m[0mRHOSTS => 192.168.217.130
+[0m[1m[32m[+][0m 192.168.217.130:21    - FTP Banner: '220 (vsFTPd 2.3.4)\x0d\x0a'
+[1m[34m[*][0m 192.168.217.130:21    - Scanned 1 of 1 hosts (100% complete)
+[1m[34m[*][0m Auxiliary module execution completed
+[0m[0mRHOSTS => 192.168.217.130
+[0m[1m[34m[*][0m 192.168.217.130:445   -   Host could not be identified: Unix (Samba 3.0.20-Debian)
+[1m[34m[*][0m 192.168.217.130       - Scanned 1 of 1 hosts (100% complete)
+[1m[34m[*][0m Auxiliary module execution completed
+[0m
