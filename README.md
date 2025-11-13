@@ -65,7 +65,7 @@ VAPT-Metasploitable-Lab/
      └── Metasploitable_VAPT_Report.pdf   # Final consulting-style PDF
 
 
-📘 Professional Final Report
+##📘 **Professional Final Report**
 
 A full consulting-grade VAPT report is included:
 
@@ -91,19 +91,19 @@ Appendix with screenshots and logs
 
 This report is written professionally using LaTeX in the exact style used by consulting firms.
 
-⚡ Exploitation Proof – Root Shell
+⚡ **Exploitation Proof – Root Shell**
 
 One of the validated exploits (vsftpd backdoor):
 
 whoami
 root
 
-→ Full system compromise achieved successfully.
+→ **Full system compromise achieved successfully.**
 
 Screenshot in:
 report/screenshots/metasploit_root.png
 
-🎯 Skills Demonstrated
+🎯 **Skills Demonstrated**
 
 Offensive security methodology (Recon → Exploit → Post-Exploit)
 
@@ -127,8 +127,13 @@ Evidence-based security documentation
 
 This project reflects the workflow of a real penetration test.
 
-🔗 Author
+🔗 **Author**
 
 Raj M. Konkar
 Security Intern — Codectechnologies
 GitHub: https://github.com/rajkonkar
+
+📝 **Disclaimer**
+
+This assessment was performed strictly in a controlled environment on a deliberately vulnerable machine.
+Do NOT run these techniques on systems you do not have explicit permission to test.
