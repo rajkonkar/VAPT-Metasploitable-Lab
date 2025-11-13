@@ -1,48 +1,65 @@
-# Metasploitable 2 – Vulnerability Assessment and Penetration Testing (VAPT)
+# 🔐 Metasploitable 2 – Vulnerability Assessment & Penetration Testing (VAPT)
+### **By Raj M. Konkar | Security Intern – Codectechnologie**
 
-This project documents a full Vulnerability Assessment and Penetration Test performed against the Metasploitable 2 virtual machine in an isolated lab network as part of my internship at Codectechnologie.
+This repository contains a complete **Vulnerability Assessment and Penetration Test (VAPT)** performed against the **Metasploitable 2** virtual machine in a controlled security lab.
 
-## Objectives
+The project demonstrates real-world penetration testing methodologies, enumeration techniques, vulnerability discovery, exploitation, and professional reporting — all aligned with industry standards such as **PTES** and **OWASP**.
 
-- Identify exposed services and attack surface.
-- Discover and validate vulnerabilities using both manual and automated techniques.
-- Safely exploit selected vulnerabilities to demonstrate real impact.
-- Produce a professional, consulting-style VAPT report.
+---
 
-## Tools Used
+## 📌 **Project Objectives**
 
-- **Kali Linux** (attacker OS)
-- **Nmap** (port scanning, service detection, NSE vuln scripts)
-- **Nikto** (web server scanning)
-- **Enum4linux** (SMB/NetBIOS enumeration)
-- **Metasploit Framework** (exploitation of vsftpd backdoor)
-- **Nessus Essentials** (automated vulnerability scanning)
+- Identify exposed attack surface on the Metasploitable 2 host.
+- Enumerate services manually using standard penetration testing tools.
+- Validate vulnerabilities using automated scanners.
+- Safely exploit critical vulnerabilities to prove real risk.
+- Produce a **corporate-style VAPT report** documenting methodology, findings, and recommendations.
 
-## Key Findings (Highlights)
+---
 
-- `vsftpd 2.3.4` backdoor (CVE-2011-2523) – remote root shell confirmed.
-- Backdoored `UnrealIRCd` service – remote code execution.
-- Weak/insecure SSL/TLS configuration on SMTP (POODLE, weak DH).
-- Outdated `Samba 3.0.20` with message signing disabled.
-- `distccd` remote execution exposure.
-- Legacy `VNC` configuration exposing potential remote desktop compromise.
-- Outdated Apache/Tomcat web stack with multiple issues.
+## 🛠️ **Tools & Technologies Used**
 
-## Repository Structure
+| Category | Tools |
+|---------|-------|
+| **Scanning & Enumeration** | Nmap, NSE, Enum4linux, Nikto |
+| **Exploitation** | Metasploit Framework |
+| **Vulnerability Scanning** | Nessus Essentials |
+| **Analysis & Reporting** | LaTeX (Crunch-style professional template) |
+| **Platform** | Kali Linux attacker machine |
 
-- `main.tex` – LaTeX source for the final VAPT report.
-- `reports/`
-  - `Metasploitable_VAPT_Report.pdf` – final professional VAPT report (for submission).
-  - `Nessus_VAPT_Report.pdf` – exported Nessus Essentials vulnerability report.
-- `scans/`
-  - Nmap service and vulnerability scan outputs.
-- `screenshots/`
-  - Evidence screenshots (Nmap, Nikto, Enum4linux, Nessus, Metasploit root shell).
+---
 
-## How This Demonstrates My Skills
+## 🚀 **Key Findings (High-Level Summary)**
 
-- End-to-end methodology (recon → scanning → enumeration → exploitation → reporting).
-- Practical use of industry tools (Nmap, Metasploit, Nessus).
-- Ability to interpret vulnerability data and turn it into clear remediation advice.
-- Professional report writing in LaTeX, following a consulting-style structure.
+### 🔴 **Critical Vulnerabilities**
+- **vsftpd 2.3.4 Backdoor (CVE-2011-2523)**  
+  → Successfully exploited via Metasploit → **Remote Root Shell**  
+- **UnrealIRCd Backdoor**  
+  → Remote Code Execution via maliciously modified server binary
 
+### 🟠 **High Severity**
+- Weak SSL/TLS on SMTP (SSLv2/SSLv3, POODLE, weak DH)
+- Samba 3.0.20 with SMB signing disabled
+- distccd Remote Command Execution exposure
+- Legacy VNC 3.3 service exposed
+
+### 🟡 **Medium Severity**
+- Outdated Apache and Tomcat versions
+- Misconfigurations on various services
+
+➡️ In a real network, these issues would allow **rapid full-system compromise** with multiple redundant attack paths.
+
+---
+
+## 📂 **Repository Structure**
+
+```plaintext
+VAPT-Metasploitable-Lab/
+│
+├── scans/                # Raw Nmap/Nikto/Enum4linux outputs
+├── msflogs/              # Metasploit logs and session output
+│
+└── report/               # Final deliverables
+     ├── latex/           # LaTeX source code for the VAPT report
+     ├── screenshots/     # Evidence screenshots (Nmap, Nikto, Nessus, MSF, etc.)
+     └── Metasploitable_VAPT_Report.pdf   # Final consulting-style PDF
